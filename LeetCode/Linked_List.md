@@ -1275,6 +1275,106 @@ class Solution:
 
 [返回目录](#00)
 
+## 148  Sort List
+
+Sort a linked list in O(n log n) time using constant space complexity.
+
+使用恒定的空间复杂度，以O（n log n）时间对链表进行排序。
+
+**Example**
+
+```
+Example 1:
+Input: 4->2->1->3
+Output: 1->2->3->4
+
+Example 2:
+Input: -1->5->3->4->0
+Output: -1->0->3->4->5
+```
+
+---
+
+### Pythonic Solution
+**分析：** 两种做法，一种是归并排序，一种是快速排序，都是 nlgn 的解法，而且不用额外空间。
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def sortList(self, head: ListNode) -> ListNode:
+        if not head or not head.next:
+            return head
+        fast = slow = sec = head
+        while fast and fast.next:
+            fast, slow, sec = fast.next.next, slow.next, slow
+        sec.next = None
+        left = self.sortList(head)
+        right = self.sortList(slow)
+        return self.merge(left, right)
+
+    def merge(self, p1, p2):
+        dummy = tmp = ListNode(0)
+        while p1 and p2:
+            if p1.val < p2.val:
+                tmp.next = p1
+                p1 = p1.next
+            else:
+                tmp.next = p2
+                p2 = p2.next
+            tmp = tmp.next
+        tmp.next = p1 or p2
+        return dummy.next
+```
+
+```python
+class Solution:
+    def sortList(self, head: ListNode) -> ListNode:
+        if not head or not head.next:
+            return head
+        return self.quicksort(head)
+
+    def quicksort(self,head):
+        if not head:
+            return
+
+        dummyl = curl = ListNode(None)
+        dummyr = curr = ListNode(None)
+        curm = head
+
+        cur = head.next
+        while cur:
+            if cur.val == head.val:
+                curm.next = cur
+                curm = curm.next
+            elif cur.val < head.val:
+                curl.next = cur
+                curl = curl.next
+            else:
+                curr.next = cur
+                curr = curr.next
+            cur = cur.next
+
+        curm.next = curr.next = curl.next = None
+
+        dummyl.next = self.quicksort(dummyl.next)
+        dummyr.next = self.quicksort(dummyr.next)
+
+        curl = dummyl
+        while curl.next:
+            curl = curl.next
+        curl.next = head
+        curm.next = dummyr.next
+
+        return dummyl.next
+```
+
+[返回目录](#00)
+
 ## 25   Reverse Nodes in k-Group
 
 Given a linked list, reverse the nodes of a linked list k at a time and return its modified list.
@@ -1428,6 +1528,60 @@ class Solution:
             head = head.next
         other.next = None
         less.next = dummy2.next
+        return dummy.next
+```
+
+[返回目录](#00)
+
+## 147	 Insertion Sort List
+
+Algorithm of Insertion Sort:
+
+1. Insertion sort iterates, consuming one input element each repetition, and growing a sorted output list.
+2. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list, and inserts it there.
+3. It repeats until no input elements remain.
+
+插入排序算法：
+
+1. 迭代插入排序，每次重复消耗一个输入元素，并增加已排序的输出列表。
+2. 在每次迭代时，插入排序都会从输入数据中删除一个元素，在排序列表中找到它所属的位置，然后将其插入。
+3. 重复直到没有输入元素剩余为止。
+
+**Example**
+
+```
+Example 1:
+Input: 4->2->1->3
+Output: 1->2->3->4
+
+Example 2:
+Input: -1->5->3->4->0
+Output: -1->0->3->4->5
+```
+
+---
+
+### Python Solution
+**分析：** 有点类似于链表翻转，其实插入排序确实可以理解成翻转的形式。重点在于第一步的优化，让找值不用每次从开始找
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def insertionSortList(self, head: ListNode) -> ListNode:
+        dummy = cur = ListNode(0)
+        while head:
+            if cur and cur.val > head.val:
+                cur = dummy
+            # 找到插入的位置
+            while cur.next and cur.next.val < head.val:
+                cur = cur.next
+            # 局部链表翻转
+            cur.next, cur.next.next, head = head, cur.next, head.next
         return dummy.next
 ```
 
